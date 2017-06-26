@@ -171,6 +171,39 @@ gpt_timer_stop(const pstimer_t *timer)
     return 0;
 }
 
+static int
+configure_gpt(const pstimer_t *timer, uint64_t ns)
+{
+    gpt_t *gpt = (gpt_t*) timer->data;
+
+    /* Set counter modulus - this effectively sets the timeouts to us but doesn't
+     * overflow as fast. */
+    uint64_t counterValue =  (uint64_t) ((IPG_FREQ / (gpt->prescaler + 1)) * ns) / 1000ULL;
+
+    if (counterValue >= (1ULL << 32)) {
+        ZF_LOGE("ns too high %llu\n", ns);
+        /* Counter too large to be stored in 32 bits. */
+        return EINVAL;
+    }
+
+    /* Set the compare register that the interrupt is triggered by */
+    gpt->gpt_map->gptcr1 = counterValue;
+
+    /* Interrupt when the timer overflows */
+    gpt->gpt_map->gptir = BIT(OF1IE);
+
+    return 0;
+}
+
+static int
+gpt_periodic(const pstimer_t *timer, uint64_t ns)
+{
+    gpt_t *gpt = (gpt_t*) timer->data;
+
+    gpt->mode = PERIODIC;
+    return configure_gpt(timer, ns);
+}
+
 static void
 gpt_handle_irq(const pstimer_t *timer, uint32_t irq UNUSED)
 {
@@ -223,7 +256,7 @@ gpt_get_timer(gpt_config_t *config)
     timer->get_time = gpt_get_time;
     timer->oneshot_absolute = stub_timer_timeout;
     timer->oneshot_relative = stub_timer_timeout;
-    timer->periodic = stub_timer_timeout;
+    timer->periodic = gpt_periodic;
     timer->handle_irq = gpt_handle_irq;
     timer->get_nth_irq = gpt_get_nth_irq;
 
