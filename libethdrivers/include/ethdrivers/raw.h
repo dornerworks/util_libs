@@ -149,4 +149,9 @@ struct eth_driver {
     int dma_alignment;
 };
 
+struct dma_buf_cookie {
+    void* vbuf;
+    void* pbuf;
+};
+
 #endif /* __ETHIFACE_RAW_IFACE_H__ */
