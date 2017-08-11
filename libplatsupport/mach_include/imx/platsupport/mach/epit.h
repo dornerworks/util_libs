@@ -16,6 +16,13 @@
 
 #include <stdint.h>
 
+/* Timers */
+enum imx_epit_id {
+    IMX_EPIT1,
+    IMX_EPIT2,
+    IMX_NTIMERS
+};
+
 typedef struct {
     /* vaddr epit is mapped to */
     void *vaddr;

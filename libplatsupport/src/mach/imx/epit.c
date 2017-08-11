@@ -228,13 +228,19 @@ epit_get_nth_irq(const pstimer_t *timer, uint32_t n)
     return 0;
 }
 
-
-static pstimer_t singleton_timer;
-static epit_t singleton_epit;
+/* Two EPIT Timers */
+static pstimer_t singleton_timer[IMX_NTIMERS];
+static epit_t singleton_epit[IMX_NTIMERS];
 
 pstimer_t *
 epit_get_timer(epit_config_t *config)
 {
+    static int epit_id=0;
+
+    /* ensure all timers haven't been setup */
+    if(epit_id >= IMX_NTIMERS) {
+        return NULL;
+    }
 
     /* check the irq */
     if (config->irq != EPIT1_INTERRUPT && config->irq != EPIT2_INTERRUPT) {
@@ -243,8 +249,8 @@ epit_get_timer(epit_config_t *config)
         return NULL;
     }
 
-    pstimer_t *timer = &singleton_timer;
-    epit_t *epit = &singleton_epit;
+    pstimer_t *timer = &singleton_timer[epit_id];
+    epit_t *epit = &singleton_epit[epit_id];
 
     timer->properties.upcounter = false;
     timer->properties.timeouts = true;
@@ -282,6 +288,8 @@ epit_get_timer(epit_config_t *config)
 
     /* Interrupt when compare with 0. */
     epit->epit_map->epitcmpr = 0;
+
+    epit_id++;
 
     return timer;
 }
