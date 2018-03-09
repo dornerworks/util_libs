@@ -17,7 +17,11 @@
 
 #include "../../chardev.h"
 
+#ifdef CONFIG_PLAT_ZYNQMP
+#define UART_REF_CLK            99990000
+#else
 #define UART_REF_CLK            50000000
+#endif
 
 /* CR */
 #define UART_CR_RXRES           BIT( 0)
@@ -95,6 +99,7 @@
 #define UART_ISR_TTRIG          BIT(10)
 #define UART_ISR_TNFUL          BIT(11)
 #define UART_ISR_TOVR           BIT(12)
+#define UART_ISR_MASK           (BIT(13)-1)
 /* RXTOUT */
 #define UART_RXTOUT_RTO(x)      ((x) * BIT(0))
 #define UART_RXTOUT_RTO_MASK    UART_RXTOUT_RTO(0xFF)
@@ -142,6 +147,8 @@
 /* Fifo size */
 #define UART_TX_FIFO_SIZE 64
 #define UART_RX_FIFO_SIZE 64
+
+#define UART_RX_TIMEOUT_SIZE 10
 
 struct zynq_uart_regs {
     uint32_t cr;            /* 0x00 Control Register */
@@ -226,7 +233,8 @@ int uart_putchar(ps_chardevice_t* d, int c)
 static void
 uart_handle_irq(ps_chardevice_t* d UNUSED)
 {
-    /* TODO */
+    zynq_uart_regs_t* regs = zynq_uart_get_priv(d);
+    regs->isr = UART_IER_RTRIG | UART_IER_TIMEOUT;
 }
 
 /*
@@ -415,11 +423,12 @@ int uart_init(const struct dev_defn* defn,
 
     /* Set the level of the RxFIFO trigger level */
     regs->rxwm &= ~UART_RXWM_RTRIG_MASK;    /* Clear the Rx trigger level */
-    regs->rxwm |= UART_RXWM_RTRIG(1);       /* Set the Rx trigger level to 1 */
+    regs->rxwm |= UART_RXWM_RTRIG(8);       /* Set the Rx trigger level to 8 */
 
     /* Enable the RTRIG interrupt */
-    regs->ier |= UART_IER_RTRIG;            /* Set the interrupt enable bit */
-    regs->idr &= ~UART_IDR_RTRIG;           /* Clear the interrupt disable bit */
+    regs->idr = UART_ISR_MASK;
+    regs->isr = UART_ISR_MASK;
+    regs->ier = (UART_IER_RTRIG | UART_IER_TIMEOUT); /* Set the interrupt enable bit */
     if (!(regs->imr & UART_IMR_RTRIG)) {    /* Verify the interrupt mask value */
         return -1;
     }
@@ -434,7 +443,7 @@ int uart_init(const struct dev_defn* defn,
     regs->cr |= UART_CR_STPBRK;             /* Stop break transmitter */
 
     /* Program the receiver timeout mechanism */
-    regs->rxtout &= ~UART_RXTOUT_RTO_MASK;  /* Disable the timeout mechanism */
+    regs->rxtout = (UART_RXTOUT_RTO_MASK & UART_RX_TIMEOUT_SIZE);
 
     /* set the tx trigger to one less than the fifo size so it's possible to check
      * if there are 2 bytes free
