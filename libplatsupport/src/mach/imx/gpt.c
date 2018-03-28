@@ -251,6 +251,9 @@ int gpt_init(gpt_t *gpt, gpt_config_t config)
 #ifdef CONFIG_PLAT_IMX7
     /* eanble the 24MHz source and select the oscillator as CLKSRC */
     gptcr |= (BIT(EN_24M) | (5u << CLKSRC));
+#elif defined(CONFIG_PLAT_IMX8)
+    /* Just use the peripheral clock for now */
+    gptcr |= (1u << CLKSRC);
 #else
     gptcr |= BIT(CLKSRC);
 #endif
@@ -282,6 +285,7 @@ int gpt_set_timeout(gpt_t  *gpt, uint64_t ns, bool periodic)
 {
     uint32_t gptcr = 0;
     uint64_t counter_value = (uint64_t)(GPT_FREQ / (gpt->prescaler + 1)) * (ns / 1000ULL);
+    /* Don't put printfs in this function, the sched0000 test will fail */
     if (counter_value >= (1ULL << 32)) {
         ZF_LOGE("ns too high %llu\n", (long long)ns);
         return EINVAL;
