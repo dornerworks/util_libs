@@ -18,7 +18,6 @@
 #include <platsupport/serial.h>
 #include <platsupport/plat/serial.h>
 #include <string.h>
-
 #include "../../chardev.h"
 
 #ifndef UART_REF_CLK

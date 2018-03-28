@@ -13,6 +13,8 @@
 /* Implementation of a logical timer for imx platforms
  *
  * Currently all imx platforms use some combination of GPT and EPIT timers to provide ltimer functionality. See platform specific timer.h for details.
+ * We use the EPIT2 for timeouts on the imx6 platform and GPT for clock.
+ * We use the EPIT2 for timeouts and GPT for clock.
  */
 #include <platsupport/timer.h>
 #include <platsupport/ltimer.h>
