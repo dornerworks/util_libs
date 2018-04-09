@@ -25,7 +25,7 @@
 #define GPT_FREQ   IPG_FREQ
 
 #include <platsupport/mach/gpt.h>
-#include <platsupport/mach/epit.h>
+#include <platsupport/plat/epit.h>
 
 /* use the GPT as the timestamp timer */
 #define TIMESTAMP_INTERRUPT GPT1_INTERRUPT

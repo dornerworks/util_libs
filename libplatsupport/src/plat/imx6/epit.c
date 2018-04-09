@@ -17,7 +17,7 @@
 
 #include <utils/util.h>
 
-#include <platsupport/mach/epit.h>
+#include <platsupport/plat/epit.h>
 #include <platsupport/plat/timer.h>
 
 /* EPIT CONTROL REGISTER BITS */

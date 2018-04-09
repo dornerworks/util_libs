@@ -283,7 +283,7 @@ int gpt_set_timeout(gpt_t  *gpt, uint64_t ns, bool periodic)
     uint32_t gptcr = 0;
     uint64_t counter_value = (uint64_t)(GPT_FREQ / (gpt->prescaler + 1)) * (ns / 1000ULL);
     if (counter_value >= (1ULL << 32)) {
-        ZF_LOGE("ns too high %llu\n", ns);
+        ZF_LOGE("ns too high %llu\n", (long long)ns);
         return EINVAL;
     }
 
