@@ -13,8 +13,7 @@
 #include <stdint.h>
 #include <platsupport/gpio.h>
 
-int mux_sys_init(ps_io_ops_t* io_ops, mux_sys_t* mux)
+int mux_sys_init(ps_io_ops_t* io_ops, void *dependencies, mux_sys_t* mux)
 {
     return 0;
 }
-
