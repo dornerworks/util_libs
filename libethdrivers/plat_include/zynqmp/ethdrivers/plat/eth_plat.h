@@ -8,4 +8,4 @@
  * @TAG(DORNERWORKS_GPL)
  */
 
-#include <ethdrivers/zynq7000.h>
+#include <ethdrivers/zynqmp.h>

@@ -4,6 +4,7 @@
 #include <autoconf.h>
 #include <ethdrivers/gen_config.h>
 
+#define CONFIG_ARM64
 #ifdef CONFIG_ARM64
 
 /*

@@ -131,7 +131,7 @@ static inline void print_val(uint8_t* p, int len){
 }
 
 static inline void print_packet(const char* col, void* packet, int length){
-    cprintf(col, "packet 0x%x (%d bytes)", (uint32_t)packet, length);
+    cprintf(col, "packet 0x%x (%d bytes)", (uintptr_t)packet, length);
     unsigned char* p = packet;
     printf(" dst MAC : ");  print_mac(p + 0);
     printf(" src MAC : ");  print_mac(p + 6); printf("\n");

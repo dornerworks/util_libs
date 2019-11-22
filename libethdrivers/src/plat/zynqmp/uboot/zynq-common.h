@@ -55,8 +55,8 @@
 #define CONFIG_ZYNQ_GPIO
 
 /* Ethernet driver */
-#if defined(CONFIG_ZYNQ_GEM0)
-# define ZYNQ_GEM_BASEADDR0		0xE000B000UL
+#if defined(CONFIG_ZYNQ_GEM3)
+# define ZYNQ_GEM_BASEADDR3		0xFF0E0000UL
 # define CONFIG_PHYLIB
 # define CONFIG_ZYNQ_GEM
 # define CONFIG_MII
@@ -67,11 +67,8 @@
 # define CONFIG_BOOTP_GATEWAY
 # define CONFIG_BOOTP_HOSTNAME
 # define CONFIG_BOOTP_MAY_FAIL
-# if !defined(CONFIG_ZYNQ_GEM_EMIO0)
-#  define CONFIG_ZYNQ_GEM_EMIO0	0
-# endif
-# if !defined(CONFIG_ZYNQ_GEM_EMIO1)
-#  define CONFIG_ZYNQ_GEM_EMIO1	0
+# if !defined(CONFIG_ZYNQ_GEM_EMIO3)
+#  define CONFIG_ZYNQ_GEM_EMIO3	0
 # endif
 #endif
 
