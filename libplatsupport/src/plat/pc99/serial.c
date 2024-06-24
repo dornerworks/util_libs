@@ -143,6 +143,10 @@ uart_init(const struct dev_defn* defn, const ps_io_ops_t* ops, ps_chardevice_t* 
     if (ps_io_port_out(&dev->ioops.io_port_ops, CONSOLE(io_port, MCR), 1, 0x0b) != 0) {
         return -1;
     }
+    /* FIFO control register: enable FIFO and set to interrupt trigger level of 8 bytes */
+    if (ps_io_port_out(&dev->ioops.io_port_ops, CONSOLE(io_port, FCR), 1, 0x81) != 0) {
+        return -1;
+    }
 
     uint32_t temp;
     /* clear receiver port */
